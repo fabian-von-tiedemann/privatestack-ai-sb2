@@ -40,7 +40,10 @@ export function TokenPricing() {
       </CardHeader>
       <CardContent>
         <div className="mb-8 space-y-4">
-          <Label>Input/Output ratio: {inputRatio}% / {100 - inputRatio}%</Label>
+          <div className="flex items-baseline gap-2">
+            <Label>Input-output ratio:</Label>
+            <span className="text-2xl font-semibold">{inputRatio}% – {100 - inputRatio}%</span>
+          </div>
           <Slider
             defaultValue={[75]}
             value={[inputRatio]}

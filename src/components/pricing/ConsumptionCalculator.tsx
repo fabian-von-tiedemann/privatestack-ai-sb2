@@ -102,7 +102,10 @@ export function ConsumptionCalculator() {
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="space-y-4">
-          <Label>Antal användare (totalt: {totalUsers})</Label>
+          <div className="flex items-baseline gap-2">
+            <Label>Antal användare:</Label>
+            <span className="text-2xl font-semibold">{totalUsers}</span>
+          </div>
           <Slider
             defaultValue={[150]}
             value={[totalUsers]}
@@ -138,7 +141,7 @@ export function ConsumptionCalculator() {
                   {category.type}
                   {` (${percentage}%)`}
                 </Label>
-                <p className="text-2xl font-semibold">{userCounts[category.type]}</p>
+                <p className="text-2xl">{userCounts[category.type]}</p>
                 <p className="text-sm text-gray-500">
                   {category.tokensPerMonth.toLocaleString()} tokens/mån
                 </p>
@@ -183,14 +186,14 @@ export function ConsumptionCalculator() {
         <div className="rounded-lg bg-gray-50 p-6">
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-600">Total tokenförbrukning/mån</span>
-              <span className="font-semibold">
+              <span className="text-gray-600">Uppskattad förbrukning (tokens)</span>
+              <span>
                 {calculateTotalTokens().toLocaleString()} tokens
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Genomsnittspris per 1M tokens</span>
-              <span className="font-semibold">
+              <span>
                 {Math.round(
                   modelCategories[0].pricePerMillion * getModelDistribution()['Mini-modeller'] +
                   modelCategories[1].pricePerMillion * getModelDistribution()['Standard'] +
@@ -199,9 +202,26 @@ export function ConsumptionCalculator() {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Uppskattad månadskostnad</span>
-              <span className="font-semibold">
+              <span className="text-gray-600">Uppskattad förbrukningskostnad</span>
+              <span>
                 {Math.round(calculateMonthlyCost()).toLocaleString()} kr
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Basplattform</span>
+              <span>10 000 kr</span>
+            </div>
+            <div className="my-2 border-t border-gray-200" />
+            <div className="flex justify-between">
+              <span className="text-gray-600">Total månadskostnad</span>
+              <span className="font-bold">
+                {(Math.round(calculateMonthlyCost()) + 10000).toLocaleString()} kr
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Genomsnittskostnad per användare</span>
+              <span className="font-bold">
+                {Math.round((calculateMonthlyCost() + 10000) / totalUsers).toLocaleString()} kr
               </span>
             </div>
           </div>
