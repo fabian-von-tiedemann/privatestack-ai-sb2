@@ -1,11 +1,10 @@
 import { Container } from '../components/Container';
 import { PageHeader } from '../components/PageHeader';
 import { motion } from 'framer-motion';
-import { Button } from '../components/Button';
+import { Button } from '@/components/ui/button';
 import { BasePlatform } from '../components/pricing/BasePlatform';
 import { TokenPricing } from '../components/pricing/TokenPricing';
 import { ConsumptionCalculator } from '../components/pricing/ConsumptionCalculator';
-import { AddOns } from '../components/pricing/AddOns';
 
 export function Pricing() {
   return (
@@ -23,7 +22,6 @@ export function Pricing() {
           <BasePlatform />
           <TokenPricing />
           <ConsumptionCalculator />
-          <AddOns />
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -40,11 +38,8 @@ export function Pricing() {
                 Vill ni ha en detaljerad kostnadsberäkning för ert specifika scenario eller 
                 diskutera hur agenter och andra avancerade funktioner påverkar era kostnader?
               </p>
-              <div className="mt-10 flex items-center justify-center gap-x-6">
+              <div className="mt-10">
                 <Button size="lg">Kontakta oss</Button>
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
-                  Be om en demo
-                </Button>
               </div>
             </div>
           </motion.div>

@@ -54,7 +54,7 @@ export function MobileMenu({ isOpen, setIsOpen, navigation }: MobileMenuProps) {
               Gå med i waitlist
             </Button>
             <Button className="w-full">
-              Be om demo
+              Kontakta oss
             </Button>
           </div>
         </div>

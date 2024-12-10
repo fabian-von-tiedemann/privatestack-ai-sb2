@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MultiRangeSlider } from '@/components/ui/multi-range-slider';
 import { Slider } from '@/components/ui/slider';
 
@@ -13,22 +12,28 @@ interface UserCategory {
   color: string;
 }
 
+interface ModelCategory {
+  type: string;
+  pricePerMillion: number;
+  color: string;
+}
+
 const categories: UserCategory[] = [
   { type: 'Sällananvändare', tokensPerMonth: 50000, color: 'bg-green-500' },
   { type: 'Vanliga användare', tokensPerMonth: 500000, color: 'bg-blue-500' },
   { type: 'Flitiga användare', tokensPerMonth: 5000000, color: 'bg-purple-500' },
 ];
 
-const modelPrices: Record<string, number> = {
-  gpt4o: 62.63,
-  gpt4o_mini: 3.72,
-  claude: 85.80,
-};
+const modelCategories: ModelCategory[] = [
+  { type: 'Mini-modeller', pricePerMillion: 5, color: 'bg-green-500' },
+  { type: 'Standard', pricePerMillion: 50, color: 'bg-blue-500' },
+  { type: 'Reasoning', pricePerMillion: 500, color: 'bg-purple-500' },
+];
 
 export function ConsumptionCalculator() {
   const [totalUsers, setTotalUsers] = useState(150);
   const [distribution, setDistribution] = useState([70, 90]); // Default: 70-20-10 split
-  const [selectedModel, setSelectedModel] = useState('gpt4o');
+  const [modelDistribution, setModelDistribution] = useState([30, 90]); // Default: 30-60-10 split
 
   const handleTotalUsersChange = (value: number[]) => {
     const total = value[0];
@@ -37,6 +42,10 @@ export function ConsumptionCalculator() {
 
   const handleDistributionChange = (value: number[]) => {
     setDistribution(value);
+  };
+
+  const handleModelDistributionChange = (value: number[]) => {
+    setModelDistribution(value);
   };
 
   const getUserCounts = () => {
@@ -50,6 +59,17 @@ export function ConsumptionCalculator() {
       'Flitiga användare': Math.round(totalUsers * (frequentPct / 100)),
     };
   };
+  const getModelDistribution = () => {
+    const miniPct = modelDistribution[0];
+    const standardPct = modelDistribution[1] - modelDistribution[0];
+    const reasoningPct = 100 - modelDistribution[1];
+
+    return {
+      'Mini-modeller': miniPct / 100,
+      'Standard': standardPct / 100,
+      'Reasoning': reasoningPct / 100,
+    };
+  };
 
   const calculateTotalTokens = () => {
     const userCounts = getUserCounts();
@@ -61,8 +81,13 @@ export function ConsumptionCalculator() {
 
   const calculateMonthlyCost = () => {
     const totalTokens = calculateTotalTokens();
-    const pricePerMillion = modelPrices[selectedModel];
-    return (totalTokens / 1000000) * pricePerMillion;
+    const modelDist = getModelDistribution();
+    
+    return (totalTokens / 1000000) * (
+      modelDist['Mini-modeller'] * modelCategories[0].pricePerMillion +
+      modelDist['Standard'] * modelCategories[1].pricePerMillion +
+      modelDist['Reasoning'] * modelCategories[2].pricePerMillion
+    );
   };
 
   return (
@@ -123,29 +148,58 @@ export function ConsumptionCalculator() {
         </div>
 
         <div className="space-y-4">
-          <Label htmlFor="model">Primär modell</Label>
-          <Select value={selectedModel} onValueChange={setSelectedModel}>
-            <SelectTrigger>
-              <SelectValue className="bg-white" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="gpt4o">GPT-4 (62,63 kr/1M tokens)</SelectItem>
-              <SelectItem value="gpt4o_mini">GPT-4 Mini (3,72 kr/1M tokens)</SelectItem>
-              <SelectItem value="claude">Claude (85,80 kr/1M tokens)</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label>Fördelning av modeller</Label>
+          <MultiRangeSlider
+            value={modelDistribution}
+            max={100}
+            step={1}
+            onValueChange={handleModelDistributionChange}
+            className="w-full mt-2"
+          />
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {modelCategories.map((category, index) => {
+              const dist = getModelDistribution();
+              const percentage = index === 0 
+                ? modelDistribution[0] 
+                : index === 1 
+                ? modelDistribution[1] - modelDistribution[0]
+                : 100 - modelDistribution[1];
+              return (
+                <div key={category.type} className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${category.color}`} />
+                    {category.type}
+                    {` (${percentage}%)`}
+                  </Label>
+                  <p className="text-sm text-gray-500">
+                    {category.pricePerMillion} kr/1M tokens
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="rounded-lg bg-gray-50 p-6">
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-600">Total tokenförbrukning/mån:</span>
+              <span className="text-gray-600">Total tokenförbrukning/mån</span>
               <span className="font-semibold">
                 {calculateTotalTokens().toLocaleString()} tokens
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Uppskattad månadskostnad:</span>
+              <span className="text-gray-600">Genomsnittspris per 1M tokens</span>
+              <span className="font-semibold">
+                {Math.round(
+                  modelCategories[0].pricePerMillion * getModelDistribution()['Mini-modeller'] +
+                  modelCategories[1].pricePerMillion * getModelDistribution()['Standard'] +
+                  modelCategories[2].pricePerMillion * getModelDistribution()['Reasoning']
+                ).toLocaleString()} kr
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Uppskattad månadskostnad</span>
               <span className="font-semibold">
                 {Math.round(calculateMonthlyCost()).toLocaleString()} kr
               </span>
