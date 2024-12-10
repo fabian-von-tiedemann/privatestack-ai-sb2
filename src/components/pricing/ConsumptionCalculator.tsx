@@ -26,7 +26,7 @@ const modelPrices: Record<string, number> = {
 };
 
 export function ConsumptionCalculator() {
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(150);
   const [distribution, setDistribution] = useState([70, 90]); // Default: 70-20-10 split
   const [selectedModel, setSelectedModel] = useState('gpt4o');
 
@@ -79,7 +79,7 @@ export function ConsumptionCalculator() {
         <div className="space-y-4">
           <Label>Antal användare (totalt: {totalUsers})</Label>
           <Slider
-            defaultValue={[0]}
+            defaultValue={[150]}
             value={[totalUsers]}
             max={5000}
             step={25}

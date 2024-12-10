@@ -10,7 +10,21 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  base: '/',
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000'
+    }
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  preview: {
+    port: 4173,
+    host: '0.0.0.0'
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  }
 });

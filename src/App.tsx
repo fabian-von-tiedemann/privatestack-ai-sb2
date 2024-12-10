@@ -8,6 +8,7 @@ import { Blog } from './pages/Blog';
 import { About } from './pages/About';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
+import { NotFound } from './pages/NotFound';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/customers" element={<Customers />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </div>
@@ -29,4 +31,4 @@ function App() {
   );
 }
 
-export default App;
+export { App };
